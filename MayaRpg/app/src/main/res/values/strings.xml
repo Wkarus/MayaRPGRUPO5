@@ -48,4 +48,13 @@
     <string name="sua_proxima_sessao">Sua proxima sessao e:</string>
     <string name="mes_anterior">Mes anterior</string>
     <string name="proximo_mes">Proximo mes</string>
+    <string name="exercicios_titulo">Exercicios</string>
+    <string name="sugestoes_maya">Sugestoes da Maya</string>
+    <string name="exercicio_tela_detalhe">Exercicio</string>
+    <string name="ex_1_fortalecimento_pernas">1. Fortalecimento das Pernas</string>
+    <string name="ex_2_fortalecimento_quadril">2. Fortalecimento do Quadril</string>
+    <string name="ex_3_fortalecimento_articular">3. Fortalecimento Articular</string>
+    <string name="pular">Pular</string>
+    <string name="iniciar">Iniciar</string>
+    <string name="voltar">Voltar</string>
 </resources>
