@@ -6,7 +6,7 @@
     <string name="label_senha">Senha</string>
     <string name="btn_login">Login</string>
     <string name="btn_cadastro">Cadastrar</string>
-    <string name="btn_visitante">Entrar como visitante</string>
+    <string name="btn_visitante">Ver planos</string>
     <string name="nao_tem_cadastro">Nao tem cadastro? Cadastre-se</string>
     <string name="ja_tem_cadastro">Ja tem cadastro? Fazer login</string>
     <string name="cadastro_titulo">Criar conta</string>
