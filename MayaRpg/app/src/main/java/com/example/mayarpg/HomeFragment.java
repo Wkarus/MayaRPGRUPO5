@@ -7,11 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeFragment extends Fragment {
 
@@ -36,7 +39,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         TextView tvBoasVindas = view.findViewById(R.id.tvBoasVindas);
-        Button btnLogout = view.findViewById(R.id.btnLogout);
+        ImageButton btnLogoutTop = view.findViewById(R.id.btnLogoutTop);
 
         String nome = "Paciente";
         if (getArguments() != null) {
@@ -44,22 +47,32 @@ public class HomeFragment extends Fragment {
         }
         tvBoasVindas.setText(getString(R.string.bem_vindo, nome));
 
-        btnLogout.setOnClickListener(v -> showLogoutDialog());
+        btnLogoutTop.setOnClickListener(v -> showLogoutDialog());
     }
 
     // Dialog de confirmacao para evitar logout acidental.
     private void showLogoutDialog() {
         if (getContext() == null) return;
 
-        new AlertDialog.Builder(getContext())
-                .setMessage(getString(R.string.logout_msg))
-                .setNegativeButton(getString(R.string.cancelar), (dialog, which) -> dialog.dismiss())
-                .setPositiveButton(getString(R.string.sair_da_conta), (dialog, which) -> {
-                    Intent intent = new Intent(requireContext(), MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    requireActivity().finish();
-                })
-                .show();
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_logout, null);
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(dialogView)
+                .create();
+
+        Button btnCancelar = dialogView.findViewById(R.id.btnCancelarLogout);
+        Button btnConfirmar = dialogView.findViewById(R.id.btnConfirmarLogout);
+
+        btnCancelar.setOnClickListener(v -> dialog.dismiss());
+        btnConfirmar.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+
+            Intent intent = new Intent(requireContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            requireActivity().finish();
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 }
