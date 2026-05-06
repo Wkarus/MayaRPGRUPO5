@@ -10,6 +10,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -24,7 +27,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         EditText etNome = findViewById(R.id.etNome);
         EditText etEmail = findViewById(R.id.etEmail);
-        EditText etCelular = findViewById(R.id.etCelular);
         EditText etSenha = findViewById(R.id.etSenhaCadastro);
         EditText etConfirmarSenha = findViewById(R.id.etConfirmarSenha);
         Button btnConcluirCadastro = findViewById(R.id.btnConcluirCadastro);
@@ -33,17 +35,21 @@ public class RegisterActivity extends AppCompatActivity {
         btnConcluirCadastro.setOnClickListener(v -> {
             String nome = etNome.getText().toString().trim();
             String email = etEmail.getText().toString().trim();
-            String celular = etCelular.getText().toString().trim();
             String senha = etSenha.getText().toString().trim();
             String confirmarSenha = etConfirmarSenha.getText().toString().trim();
 
-            if (nome.isEmpty() || email.isEmpty() || celular.isEmpty() || senha.isEmpty() || confirmarSenha.isEmpty()) {
+            if (nome.isEmpty() || email.isEmpty() || senha.isEmpty() || confirmarSenha.isEmpty()) {
                 Toast.makeText(this, getString(R.string.erro_campos_obrigatorios), Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!senha.equals(confirmarSenha)) {
                 Toast.makeText(this, getString(R.string.erro_senhas_diferentes), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (senha.length() < 6) {
+                Toast.makeText(this, getString(R.string.erro_senha_curta), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -58,7 +64,8 @@ public class RegisterActivity extends AppCompatActivity {
         firebaseAuth.createUserWithEmailAndPassword(email.trim().toLowerCase(), senha)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful() || task.getResult() == null || task.getResult().getUser() == null) {
-                        Toast.makeText(this, getString(R.string.cadastro_falhou), Toast.LENGTH_SHORT).show();
+                        Exception exception = task.getException();
+                        Toast.makeText(this, resolveCadastroErrorMessage(exception), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -74,5 +81,18 @@ public class RegisterActivity extends AppCompatActivity {
                     startActivity(new Intent(this, MainActivity.class));
                     finish();
                 });
+    }
+
+    private String resolveCadastroErrorMessage(Exception exception) {
+        if (exception instanceof FirebaseAuthWeakPasswordException) {
+            return getString(R.string.erro_senha_curta);
+        }
+        if (exception instanceof FirebaseAuthUserCollisionException) {
+            return getString(R.string.erro_email_em_uso);
+        }
+        if (exception instanceof FirebaseAuthInvalidCredentialsException) {
+            return getString(R.string.erro_email_invalido);
+        }
+        return getString(R.string.cadastro_falhou);
     }
 }

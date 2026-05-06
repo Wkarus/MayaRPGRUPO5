@@ -61,31 +61,6 @@
             app:layout_constraintTop_toBottomOf="@id/tvLabelEmail" />
 
         <TextView
-            android:id="@+id/tvLabelCelular"
-            android:layout_width="245dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/label_celular"
-            android:textColor="@color/text_on_primary"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etEmail" />
-
-        <EditText
-            android:id="@+id/etCelular"
-            android:layout_width="245dp"
-            android:layout_height="36dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/bg_input"
-            android:elevation="4dp"
-            android:inputType="phone"
-            android:paddingHorizontal="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvLabelCelular" />
-
-        <TextView
             android:id="@+id/tvLabelSenha"
             android:layout_width="245dp"
             android:layout_height="wrap_content"
@@ -95,7 +70,7 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etCelular" />
+            app:layout_constraintTop_toBottomOf="@id/etEmail" />
 
         <EditText
             android:id="@+id/etSenhaCadastro"

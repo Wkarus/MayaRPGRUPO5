@@ -29,6 +29,9 @@
     <string name="email_confirmacao_corpo">Ola, %1$s!\n\nSeu cadastro no app da Maya RPG foi realizado com sucesso.\nEm breve entraremos em contato para o acompanhamento da fisioterapia.\n\nEquipe Maya RPG</string>
     <string name="erro_campos_obrigatorios">Preencha todos os campos.</string>
     <string name="erro_senhas_diferentes">As senhas nao conferem.</string>
+    <string name="erro_senha_curta">A senha deve ter pelo menos 6 caracteres.</string>
+    <string name="erro_email_em_uso">Este e-mail ja esta cadastrado.</string>
+    <string name="erro_email_invalido">Digite um e-mail valido.</string>
     <string name="cadastro_sucesso">Cadastro concluido com sucesso!</string>
     <string name="email_inexistente">Nao foi possivel abrir app de e-mail.</string>
     <string name="login_falhou">Nao foi possivel fazer login. Verifique email e senha.</string>
