@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,15 +50,80 @@ public class HomeFragment extends Fragment {
         TextView tvBoasVindas = view.findViewById(R.id.tvBoasVindas);
         ImageButton btnLogoutTop = view.findViewById(R.id.btnLogoutTop);
 
-        String nome = "Paciente";
-        if (getArguments() != null) {
-            nome = getArguments().getString(KEY_NOME, "Paciente");
-        }
+        String nome = resolveNomeCliente();
+
         tvBoasVindas.setText(getString(R.string.bem_vindo, nome));
+
+        TextView tvMensagemMaya = view.findViewById(R.id.tvMensagemMaya);
+        tvMensagemMaya.setText(getString(R.string.maya_mensagem_cliente, nome));
 
         btnLogoutTop.setOnClickListener(v -> showLogoutDialog());
 
         setupMayaReply(view);
+        SessionBookingFirestore.fetchAndCacheLocal(requireContext(), () -> {
+            if (isAdded() && getView() != null) {
+                refreshProximaSessaoUi(getView());
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        View v = getView();
+        if (v != null) {
+            SessionBookingFirestore.fetchAndCacheLocal(requireContext(), () -> {
+                if (isAdded() && getView() != null) {
+                    refreshProximaSessaoUi(getView());
+                }
+            });
+        }
+    }
+
+    private void refreshProximaSessaoUi(View root) {
+        TextView tv = root.findViewById(R.id.tvProximaSessaoResumo);
+        if (tv == null || getContext() == null) {
+            return;
+        }
+        if (SessionBookingPreferences.hasBooking(requireContext())) {
+            String summary = SessionBookingPreferences.formatHomeSummary(requireContext());
+            tv.setText(summary != null ? summary : getString(R.string.proxima_sessao_agendar_hint));
+            tv.setBackgroundResource(R.drawable.bg_button_green);
+            tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_on_primary));
+        } else {
+            tv.setText(R.string.proxima_sessao_agendar_hint);
+            tv.setBackgroundResource(R.drawable.bg_chip_blue);
+            tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_on_primary));
+        }
+    }
+
+    /**
+     * Nome mostrado na home: argumentos da Activity (login) ou Firebase Auth (displayName / email).
+     */
+    private String resolveNomeCliente() {
+        String nome = "Paciente";
+        if (getArguments() != null) {
+            nome = getArguments().getString(KEY_NOME, "Paciente");
+        }
+        if (!"Paciente".equals(nome) && nome != null && !nome.trim().isEmpty()) {
+            return nome.trim();
+        }
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String display = user.getDisplayName();
+            if (display != null && !display.trim().isEmpty()) {
+                return display.trim();
+            }
+            String email = user.getEmail();
+            if (email != null && !email.isEmpty()) {
+                int at = email.indexOf('@');
+                String local = at > 0 ? email.substring(0, at) : email;
+                if (!local.isEmpty()) {
+                    return local;
+                }
+            }
+        }
+        return nome != null && !nome.trim().isEmpty() ? nome.trim() : "Paciente";
     }
 
     private void setupMayaReply(View root) {

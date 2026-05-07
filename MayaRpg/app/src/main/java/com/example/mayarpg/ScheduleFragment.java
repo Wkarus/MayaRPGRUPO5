@@ -98,9 +98,51 @@ public class ScheduleFragment extends Fragment {
 
         // Atualiza o label da data selecionada
         updateSelectedDateLabel();
-        
+
         // Atualiza os botões de horário para refletir a seleção atual
         refreshTimeSelection();
+
+        SessionBookingFirestore.fetchAndCacheLocal(requireContext(), () -> {
+            if (isAdded()) {
+                restoreBookingFromPreferences();
+            }
+        });
+    }
+
+    /**
+     * Recupera data/horario ja guardados (proxima sessao) e reflete no calendario.
+     */
+    private void restoreBookingFromPreferences() {
+        if (getContext() == null) {
+            return;
+        }
+        String iso = SessionBookingPreferences.getDateIso(requireContext());
+        String time = SessionBookingPreferences.getTime(requireContext());
+        if (iso == null || time == null || iso.isEmpty() || time.isEmpty()) {
+            return;
+        }
+        try {
+            LocalDate saved = LocalDate.parse(iso, DateTimeFormatter.ISO_LOCAL_DATE);
+            LocalDate previous = selectedDate;
+            selectedDate = saved;
+            selectedHourByDate.put(iso, time);
+            currentMonth = YearMonth.from(saved);
+            calendarView.scrollToMonth(currentMonth);
+            calendarView.notifyDateChanged(previous);
+            calendarView.notifyDateChanged(selectedDate);
+            updateMonthYearLabelsFromYearMonth(currentMonth);
+            updateSelectedDateLabel();
+            refreshTimeSelection();
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void updateMonthYearLabelsFromYearMonth(YearMonth ym) {
+        String[] months = {"Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+                "Jul", "Ago", "Set", "Out", "Nov", "Dez"};
+        int monthIndex = ym.getMonthValue() - 1;
+        tvMonth.setText(months[monthIndex]);
+        tvYear.setText(String.valueOf(ym.getYear()));
     }
 
     /**
@@ -209,8 +251,13 @@ public class ScheduleFragment extends Fragment {
             button.setOnClickListener(v -> {
                 // Armazena o horário selecionado para a data atual
                 String key = getDateKey(selectedDate);
-                selectedHourByDate.put(key, button.getText().toString());
-                
+                String hourLabel = button.getText().toString();
+                selectedHourByDate.put(key, hourLabel);
+                if (getContext() != null) {
+                    SessionBookingPreferences.save(requireContext(), key, hourLabel);
+                    SessionBookingFirestore.syncToCloud(requireContext(), key, hourLabel);
+                }
+
                 // Atualiza a aparência dos botões
                 refreshTimeSelection();
             });

@@ -81,13 +81,17 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="155dp"
-                    android:layout_height="52dp"
+                    android:id="@+id/tvProximaSessaoResumo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_button_green"
+                    android:background="@drawable/bg_chip_blue"
                     android:gravity="center"
-                    android:text="Quar, 22/04"
+                    android:minHeight="52dp"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="14dp"
+                    android:text="@string/proxima_sessao_agendar_hint"
                     android:textColor="@color/text_on_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -130,12 +134,13 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/tvMensagemMaya"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="Ola, Francisco! Passando para saber como voce se sentiu apos a nossa sessao de RPG de hoje. Lembre-se de manter a atencao na sua postura e na respiracao profunda que praticamos."
                     android:textColor="@android:color/black"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:text="Ola, Maria! Passando para saber…" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

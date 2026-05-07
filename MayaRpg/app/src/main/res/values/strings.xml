@@ -15,6 +15,7 @@
     <string name="label_celular">Celular</string>
     <string name="label_confirmar_senha">Confirme a senha</string>
     <string name="bem_vindo">Ola, %1$s!</string>
+    <string name="maya_mensagem_cliente">Ola, %1$s! Passando para saber como voce se sentiu apos a nossa sessao de RPG de hoje. Lembre-se de manter a atencao na sua postura e na respiracao profunda que praticamos.</string>
     <string name="descricao_home">Sua proxima sessao esta aqui.</string>
     <string name="logout_msg">Deseja sair da sua conta?</string>
     <string name="cancelar">Cancelar</string>
@@ -63,4 +64,5 @@
     <string name="enviar_resposta">Enviar</string>
     <string name="resposta_vazia_toast">Digite uma mensagem antes de enviar.</string>
     <string name="resposta_salva_toast">Resposta enviada.</string>
+    <string name="proxima_sessao_agendar_hint">Escolha uma data e um horario na aba Agenda para ver sua proxima sessao aqui.</string>
 </resources>
