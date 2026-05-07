@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import com.kizitonwose.calendar.core.CalendarDay;
 import com.kizitonwose.calendar.core.CalendarMonth;
@@ -25,7 +28,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +62,8 @@ public class ScheduleFragment extends Fragment {
     
     // Mês atualmente exibido no calendário
     private YearMonth currentMonth = YearMonth.now();
+
+    private final FirestoreConsultasRepository consultasRepository = new FirestoreConsultasRepository();
 
     @Nullable
     @Override
@@ -101,6 +105,40 @@ public class ScheduleFragment extends Fragment {
         
         // Atualiza os botões de horário para refletir a seleção atual
         refreshTimeSelection();
+
+        Button btnConfirmar = view.findViewById(R.id.btnConfirmarAgendamento);
+        btnConfirmar.setOnClickListener(v -> confirmarAgendamento(btnConfirmar));
+    }
+
+    private void confirmarAgendamento(Button btnConfirmar) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(requireContext(), R.string.login_falhou, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String key = getDateKey(selectedDate);
+        String horario = selectedHourByDate.get(key);
+        if (horario == null || horario.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.selecione_horario, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String dataIso = key;
+        btnConfirmar.setEnabled(false);
+
+        consultasRepository.criarConsulta(dataIso, horario)
+                .addOnCompleteListener(task -> {
+                    if (!isAdded()) {
+                        return;
+                    }
+                    btnConfirmar.setEnabled(true);
+                    if (task.isSuccessful()) {
+                        Toast.makeText(requireContext(), R.string.consulta_salva, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(requireContext(), R.string.erro_salvar_consulta, Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     /**

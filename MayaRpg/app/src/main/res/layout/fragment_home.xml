@@ -81,13 +81,17 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="155dp"
-                    android:layout_height="52dp"
+                    android:id="@+id/tvProximaSessaoData"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="12dp"
                     android:background="@drawable/bg_button_green"
                     android:gravity="center"
-                    android:text="Quar, 22/04"
+                    android:minHeight="52dp"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="12dp"
+                    android:text="@string/carregando_sessao"
                     android:textColor="@color/text_on_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -156,10 +160,13 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvResponderFeedback"
                         android:layout_width="0dp"
                         android:layout_height="42dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_button_green"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center"
                         android:text="Responder  💬"
                         android:textColor="@color/text_on_primary"

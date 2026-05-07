@@ -48,4 +48,19 @@
     <string name="sua_proxima_sessao">Sua proxima sessao e:</string>
     <string name="mes_anterior">Mes anterior</string>
     <string name="proximo_mes">Proximo mes</string>
+    <string name="confirmar_agendamento">Confirmar agendamento</string>
+    <string name="selecione_horario">Escolha um horario para esta data.</string>
+    <string name="consulta_salva">Consulta agendada com sucesso.</string>
+    <string name="erro_salvar_consulta">Nao foi possivel salvar o agendamento.</string>
+    <string name="nenhuma_consulta_agendada">Nenhuma consulta agendada ainda.</string>
+    <string name="carregando_sessao">Carregando…</string>
+    <string name="titulo_feedback">Feedback da sessao</string>
+    <string name="feedback_instrucao_nota">Como foi sua experiencia?</string>
+    <string name="hint_comentario_feedback">Comentario (opcional)</string>
+    <string name="enviar_feedback">Enviar</string>
+    <string name="feedback_enviado">Obrigado pelo feedback!</string>
+    <string name="feedback_erro">Nao foi possivel enviar o feedback.</string>
+    <string name="feedback_sem_consulta">Agende uma consulta antes de enviar feedback.</string>
+    <string name="feedback_escolha_nota">Escolha de 1 a 5 estrelas.</string>
+    <string name="erro_carregar_sessao">Nao foi possivel carregar sua agenda.</string>
 </resources>
