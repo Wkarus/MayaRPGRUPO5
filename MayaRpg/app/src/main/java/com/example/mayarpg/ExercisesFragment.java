@@ -21,16 +21,14 @@ public class ExercisesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        View.OnClickListener openDetail = v -> openExerciseDetail();
+        view.findViewById(R.id.cardExercise1).setOnClickListener(v -> openExerciseDetail(R.string.ex_1_fortalecimento_pernas));
+        view.findViewById(R.id.btnIniciar1).setOnClickListener(v -> openExerciseDetail(R.string.ex_1_fortalecimento_pernas));
 
-        view.findViewById(R.id.cardExercise1).setOnClickListener(openDetail);
-        view.findViewById(R.id.btnIniciar1).setOnClickListener(openDetail);
+        view.findViewById(R.id.cardExercise2).setOnClickListener(v -> openExerciseDetail(R.string.ex_2_fortalecimento_quadril));
+        view.findViewById(R.id.btnIniciar2).setOnClickListener(v -> openExerciseDetail(R.string.ex_2_fortalecimento_quadril));
 
-        view.findViewById(R.id.cardExercise2).setOnClickListener(openDetail);
-        view.findViewById(R.id.btnIniciar2).setOnClickListener(openDetail);
-
-        view.findViewById(R.id.cardExercise3).setOnClickListener(openDetail);
-        view.findViewById(R.id.btnIniciar3).setOnClickListener(openDetail);
+        view.findViewById(R.id.cardExercise3).setOnClickListener(v -> openExerciseDetail(R.string.ex_3_fortalecimento_articular));
+        view.findViewById(R.id.btnIniciar3).setOnClickListener(v -> openExerciseDetail(R.string.ex_3_fortalecimento_articular));
 
         View.OnClickListener consume = v -> { };
         view.findViewById(R.id.btnPular1).setOnClickListener(consume);
@@ -38,7 +36,8 @@ public class ExercisesFragment extends Fragment {
         view.findViewById(R.id.btnPular3).setOnClickListener(consume);
     }
 
-    private void openExerciseDetail() {
+    private void openExerciseDetail(int exerciseTitleRes) {
+        ExerciseHistoryStore.log(requireContext(), getString(exerciseTitleRes));
         getParentFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)

@@ -87,4 +87,26 @@ public final class SessionBookingPreferences {
             return null;
         }
     }
+
+    /**
+     * Formata data ISO + hora para texto igual ao da home (ex.: Ter, 22/04 as 9:00).
+     */
+    public static String formatLine(String dateIso, String timeText) {
+        try {
+            LocalDate date = LocalDate.parse(dateIso, DateTimeFormatter.ISO_LOCAL_DATE);
+            String[] weekPt = {"Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "S\u00e1b"};
+            int dayOfWeek = date.getDayOfWeek().getValue();
+            int weekIndex = dayOfWeek % 7;
+            String weekDay = weekPt[weekIndex];
+            String formattedDate = String.format(Locale.getDefault(),
+                    "%s, %02d/%02d",
+                    weekDay,
+                    date.getDayOfMonth(),
+                    date.getMonthValue()
+            );
+            return formattedDate + " as " + timeText;
+        } catch (Exception e) {
+            return dateIso + " as " + timeText;
+        }
+    }
 }

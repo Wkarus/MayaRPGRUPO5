@@ -29,6 +29,9 @@ public class HomeActivity extends AppCompatActivity {
             } else if (id == R.id.nav_exercises) {
                 openFragment(new ExercisesFragment());
                 return true;
+            } else if (id == R.id.nav_user) {
+                openFragment(UserFragment.newInstance(nomeUsuario));
+                return true;
             }
             return false;
         });

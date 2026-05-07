@@ -19,6 +19,7 @@
     <string name="descricao_home">Sua proxima sessao esta aqui.</string>
     <string name="logout_msg">Deseja sair da sua conta?</string>
     <string name="cancelar">Cancelar</string>
+    <string name="confirmar">Confirmar</string>
     <string name="sair_da_conta">Sair da Conta</string>
     <string name="planos_titulo">Planos para visitantes</string>
     <string name="plano_basico">Plano Basico - R$ 95/mes</string>
@@ -42,6 +43,17 @@
     <string name="home_label">Inicio</string>
     <string name="agenda_label">Agenda</string>
     <string name="exercicios_label">Exercicios</string>
+    <string name="usuario_label">Usuario</string>
+    <string name="usuario_perfil_titulo">Area do usuario</string>
+    <string name="perfil_sec_consulta_marcada">Consulta marcada (proxima)</string>
+    <string name="perfil_sec_historico_consultas">Historico de consultas confirmadas</string>
+    <string name="perfil_sec_mensagens_maya">Mensagens da Maya</string>
+    <string name="perfil_sec_exercicios_feitos">Exercicios iniciados</string>
+    <string name="perfil_sem_consulta_marcada">Nenhuma consulta marcada na agenda. Va em Agenda para escolher data e horario.</string>
+    <string name="perfil_sem_exercicios">Ainda nao registamos exercicios. Inicie um na aba Exercicios.</string>
+    <string name="lista_sem_registros_perfil">Sem registos nesta secao.</string>
+    <string name="perfil_maya_item_header">%1$s</string>
+    <string name="perfil_sua_resposta_header">Sua resposta (pagina Inicio)</string>
     <string name="agendar_consulta">Agendar consulta</string>
     <string name="agendar_consulta_upper">AGENDAR CONSULTA</string>
     <string name="exercicio_do_dia">Exercicio do dia</string>
@@ -65,4 +77,10 @@
     <string name="resposta_vazia_toast">Digite uma mensagem antes de enviar.</string>
     <string name="resposta_salva_toast">Resposta enviada.</string>
     <string name="proxima_sessao_agendar_hint">Escolha uma data e um horario na aba Agenda para ver sua proxima sessao aqui.</string>
+    <string name="confirmar_agendamento">Confirmar agendamento</string>
+    <string name="dialog_confirmar_agendamento_titulo">Confirmar marcacao</string>
+    <string name="dialog_confirmar_agendamento_msg">Deseja confirmar sua sessao para %1$s as %2$s?\n\nO WhatsApp sera aberto para voce enviar a confirmacao a Maya.</string>
+    <string name="agendamento_confirmado_toast">Agendamento confirmado.</string>
+    <string name="whatsapp_maya_numero" translatable="false"></string>
+    <string name="whatsapp_msg_confirmacao_agendamento">Ola Maya! Confirmo meu agendamento no app Maya RPG:\n%1$s as %2$s\n(ref. data: %3$s)</string>
 </resources>

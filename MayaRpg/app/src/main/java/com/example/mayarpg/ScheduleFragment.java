@@ -1,6 +1,9 @@
 package com.example.mayarpg;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,11 +11,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import com.kizitonwose.calendar.core.CalendarDay;
 import com.kizitonwose.calendar.core.CalendarMonth;
@@ -54,6 +60,7 @@ public class ScheduleFragment extends Fragment {
     private TextView tvSelectedDate;
     private ImageButton btnPrevMonth;
     private ImageButton btnNextMonth;
+    private Button btnConfirmarAgendamento;
 
     // Data atualmente selecionada pelo usuário
     private LocalDate selectedDate = LocalDate.now();
@@ -78,9 +85,11 @@ public class ScheduleFragment extends Fragment {
         tvSelectedDate = view.findViewById(R.id.tvSelectedDate);
         btnPrevMonth = view.findViewById(R.id.btnPrevMonth);
         btnNextMonth = view.findViewById(R.id.btnNextMonth);
+        btnConfirmarAgendamento = view.findViewById(R.id.btnConfirmarAgendamento);
 
         // Configura os botões de horário
         setupTimeButtons(view);
+        setupConfirmButton();
 
         // Configura o calendário
         setupCalendar();
@@ -107,6 +116,81 @@ public class ScheduleFragment extends Fragment {
                 restoreBookingFromPreferences();
             }
         });
+    }
+
+    private void setupConfirmButton() {
+        btnConfirmarAgendamento.setOnClickListener(v -> showConfirmBookingDialog());
+    }
+
+    private void updateConfirmButtonState() {
+        String key = getDateKey(selectedDate);
+        String hour = selectedHourByDate.get(key);
+        boolean ready = hour != null && !hour.isEmpty();
+        btnConfirmarAgendamento.setEnabled(ready);
+    }
+
+    private void showConfirmBookingDialog() {
+        if (getContext() == null) {
+            return;
+        }
+        String key = getDateKey(selectedDate);
+        String time = selectedHourByDate.get(key);
+        if (time == null || time.isEmpty()) {
+            return;
+        }
+        String dateLabel = formatSelectedDateShort();
+        String msg = getString(R.string.dialog_confirmar_agendamento_msg, dateLabel, time);
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.dialog_confirmar_agendamento_titulo)
+                .setMessage(msg)
+                .setNegativeButton(R.string.cancelar, null)
+                .setPositiveButton(R.string.confirmar, (dialog, which) -> confirmAndPersistBooking(key, time, dateLabel))
+                .show();
+    }
+
+    /**
+     * Linha curta tipo "Ter, 19/05" (sem hora).
+     */
+    private String formatSelectedDateShort() {
+        String[] weekPt = {"Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "S\u00e1b"};
+        int dayOfWeek = selectedDate.getDayOfWeek().getValue();
+        int weekIndex = dayOfWeek % 7;
+        String weekDay = weekPt[weekIndex];
+        return String.format(Locale.getDefault(),
+                "%s, %02d/%02d",
+                weekDay,
+                selectedDate.getDayOfMonth(),
+                selectedDate.getMonthValue());
+    }
+
+    private void confirmAndPersistBooking(String dateIso, String timeText, String dateLabel) {
+        SessionBookingPreferences.save(requireContext(), dateIso, timeText);
+        SessionBookingFirestore.syncToCloud(requireContext(), dateIso, timeText);
+        AppointmentHistoryStore.append(requireContext(), dateIso, timeText);
+
+        Toast.makeText(requireContext(), R.string.agendamento_confirmado_toast, Toast.LENGTH_SHORT).show();
+
+        StringBuilder msg = new StringBuilder(getString(R.string.whatsapp_msg_confirmacao_agendamento,
+                dateLabel, timeText, dateIso));
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null && user.getEmail() != null && !user.getEmail().trim().isEmpty()) {
+            msg.append("\nConta: ").append(user.getEmail().trim());
+        }
+        openWhatsappParaMaya(msg.toString());
+    }
+
+    private void openWhatsappParaMaya(String texto) {
+        if (getContext() == null) {
+            return;
+        }
+        String raw = getString(R.string.whatsapp_maya_numero).trim().replaceAll("\\D", "");
+        if (raw.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.numero_whatsapp_nao_configurado, Toast.LENGTH_LONG).show();
+            return;
+        }
+        String url = "https://wa.me/" + raw + "?text=" + Uri.encode(texto);
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     /**
@@ -253,10 +337,6 @@ public class ScheduleFragment extends Fragment {
                 String key = getDateKey(selectedDate);
                 String hourLabel = button.getText().toString();
                 selectedHourByDate.put(key, hourLabel);
-                if (getContext() != null) {
-                    SessionBookingPreferences.save(requireContext(), key, hourLabel);
-                    SessionBookingFirestore.syncToCloud(requireContext(), key, hourLabel);
-                }
 
                 // Atualiza a aparência dos botões
                 refreshTimeSelection();
@@ -277,6 +357,7 @@ public class ScheduleFragment extends Fragment {
             // Verde se selecionado, azul caso contrário
             button.setBackgroundResource(isSelected ? R.drawable.bg_button_green : R.drawable.bg_chip_blue);
         }
+        updateConfirmButtonState();
     }
 
     /**

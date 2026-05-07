@@ -264,6 +264,94 @@ compileOptions {
 
 ---
 
+## Integracao com MySQL, API REST (projeto interdisciplinar Backend) e checklist da proxima etapa
+
+Este capitulo descreve **o que e preciso** para o app Android **consumir dados de uma API REST** desenvolvida no backend do projeto interdisciplinar (com **MySQL** por baixo), integrar **autenticacao**, **armazenamento local**, **notificacoes** e o fluxo principal de **check-in de exercicios**.
+
+### Visao geral da arquitetura
+
+```
+[ App Android ]  --HTTPS (JSON)-->  [ API REST - Backend ]  -->  [ MySQL ]
+       |                                       |
+       +-------- persistencia local -----------+  (cache / fila offline / Room)
+```
+
+- O **telemovel nunca liga ao MySQL diretamente**. Credenciais da base ficam **so no servidor**.
+- O **Backend** (Node, Java Spring, PHP Laravel, etc.) usa **MySQL** + opcionalmente **Prisma** ou outro ORM e expoe endpoints REST.
+- O **Android** usa **Retrofit** (ou OkHttp) + modelos JSON (Gson/Moshi).
+
+### O que precisa existir no Backend (MySQL ja pronto)
+
+| Item | Descricao |
+|------|-----------|
+| Servidor HTTPS | API acessivel pela Internet (ou tunel tipo ngrok em desenvolvimento). |
+| MySQL | Base com tabelas acordadas com o backend (ex.: `usuarios`, `exercicios`, `exercicio_execucoes`, `consultas`, mensagens Maya). |
+| Contrato REST | Documentacao minima: URLs, metodos GET/POST/PATCH, corpos JSON e codigos de erro. |
+| Autenticacao na API | Ex.: login retorna **JWT**; todas as rotas protegidas enviam `Authorization: Bearer <token>`. Alternativa: validar **Firebase ID Token** no servidor (`verifyIdToken`) e cruzar com `firebase_uid` na tabela `usuarios`. |
+| CORS / seguranca | HTTPS, limite de taxa, validacao de entrada; MySQL **nao** exposto na porta publica. |
+
+### Endpoints REST sugeridos (alinhar com o grupo de Backend)
+
+| Funcionalidade | Exemplo | Notas |
+|----------------|---------|--------|
+| Lista de exercicios | `GET /api/exercises` | Retorna catalogo para a **Tela de exercicios**. |
+| Check-in / execucao | `POST /api/exercises/{id}/check-in` | Corpo: `{ "completedAt": "ISO-8601" }`; persiste em MySQL. |
+| Historico de execucoes | `GET /api/users/me/check-ins` | Para **historico** no app / aba Usuario. |
+| Consultas agendadas | `GET/POST /api/appointments` | Sincronizar com ou substituir Firestore, conforme decisao do grupo. |
+| Mensagens / novidades | `GET /api/messages` ou `GET /api/exercises?updatedSince=...` | Base para **notificar exercicios novos** (ver abaixo). |
+
+*(Os caminhos exatos ficam a cargo do projeto interdisciplinar.)*
+
+### O que precisa ser feito no Android (este repositorio)
+
+| Item | Descricao |
+|------|-----------|
+| Dependencias | Adicionar **Retrofit** + conversor **Gson** (ou Moshi); opcional **Room** para cache e historico offline consistente. |
+| Configuracao da URL | Base URL da API em `BuildConfig` ou `local.properties` (**sem** commitar secrets); ambientes dev/prod. |
+| Camada de rede | Interfaces Retrofit, DTOs iguais ao JSON do backend, tratamento de erro e timeouts. |
+| Autenticacao | Apos login Firebase (ou login proprio), obter **JWT** do backend ou enviar **Firebase ID Token** nos pedidos, conforme o Backend definir. |
+| Fluxo principal da etapa | **Tela Exercicios** → `GET /exercises` → utilizador regista execucao → **POST check-in** → gravar em **armazenamento local** (Room ou datastore) → **ecra Historico** le da API + local. |
+| Sincronizacao | Opcional: fila de pedidos falhados (offline primeiro); reconciliar quando houver rede. |
+
+### Persistencia local (armazenamento local)
+
+- **Room**: recomendado para lista em cache de exercicios, ultimo sync e registos de check-in com flag `synced`.
+- **SharedPreferences**: suficiente para prototipo simples; limitado para listas grandes ou consultas complexas.
+- Definir politica: **fonte de verdade** na API; local e cache + historico quando offline.
+
+### Notificacoes (exercicios novos, data de consulta, etc.)
+
+| Tipo | O que precisa |
+|------|----------------|
+| Push (Firebase Cloud Messaging) | Projeto Firebase com **FCM** ativado; Backend ou Firebase Functions envia mensagens quando houver **exercicio novo** ou **consulta proxima**; app registra token em `FirebaseMessaging` e guarda token no servidor (MySQL) para direcionar ao utilizador. |
+| Locais (NotificationManager) | Lembretes agendados com **WorkManager** + `AlarmManager`/Workers (ex.: vinte e quatro horas antes da consulta); **nao** substituem push para dados vindos do servidor em tempo real. |
+
+Sem Backend ou FCM a enviar eventos, o app pode apenas **notificar localmente** apos acoes do proprio utilizador (ex.: confirmacao de agendamento), o que nao cobre totalmente "exercicios novos" vindos do servidor.
+
+### Fluxo principal resumido (objetivo da etapa)
+
+1. Utilizador abre **Exercicios**.
+2. App pede **GET** ao Backend → dados gravados no MySQL devolvidos em JSON.
+3. Opcional: atualiza **cache local** (Room).
+4. Utilizador confirma **execucao (check-in)** → **POST** ao Backend → Backend **INSERT** em MySQL.
+5. App grava o mesmo evento **localmente** (historico imediato e modo offline).
+6. **Historico** mostra dados mesclados (API + local pendente de sync).
+
+### Contrato com o projeto interdisciplinar
+
+Para evitar bloqueios entre equipas, convém fixar por escrito:
+
+1. Formato JSON dos exercicios e do check-in.
+2. Esquema de autenticacao (JWT vs Firebase ID Token).
+3. URL base de **staging** para testes integrados.
+4. Quais dados ficam so no Firebase vs **so no MySQL** (evitar duplicacao sem estrategia).
+
+### Referencia de modelo de dados MySQL (resumo)
+
+Tabelas tipicas: `usuarios` (com `firebase_uid` opcional), `exercicios`, `exercicio_execucoes`, `consultas`, opcional `maya_mensagens` / `maya_respostas`. O Backend pode usar **Prisma** ou SQL direto sobre estas tabelas.
+
+---
+
 ## 👨‍💻 Desenvolvido por
 
 Projeto desenvolvido para a clínica **Maya RPG Fisioterapia**.
