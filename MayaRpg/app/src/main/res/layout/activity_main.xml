@@ -36,6 +36,7 @@
             android:layout_height="38dp"
             android:layout_marginBottom="18dp"
             android:background="@drawable/bg_input"
+            android:textColor="@color/black"
             android:elevation="4dp"
             android:inputType="text"
             android:paddingHorizontal="12dp" />
@@ -53,6 +54,7 @@
             android:layout_width="245dp"
             android:layout_height="38dp"
             android:layout_marginBottom="16dp"
+            android:textColor="@color/black"
             android:background="@drawable/bg_input"
             android:elevation="4dp"
             android:inputType="textPassword"

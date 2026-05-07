@@ -57,4 +57,10 @@
     <string name="pular">Pular</string>
     <string name="iniciar">Iniciar</string>
     <string name="voltar">Voltar</string>
+    <string name="responder_maya">Responder \u0020\u0020💬</string>
+    <string name="sua_resposta_label">Sua resposta</string>
+    <string name="hint_resposta_maya">Escreva sua mensagem para a Maya…</string>
+    <string name="enviar_resposta">Enviar</string>
+    <string name="resposta_vazia_toast">Digite uma mensagem antes de enviar.</string>
+    <string name="resposta_salva_toast">Resposta enviada.</string>
 </resources>
